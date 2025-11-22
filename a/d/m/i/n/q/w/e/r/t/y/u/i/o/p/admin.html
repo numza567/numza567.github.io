@@ -144,7 +144,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const tbody = document.querySelector('#post-list tbody');
             // เนื่องจาก admin.html อยู่ลึก เราต้องกลับไป 2 ชั้นเพื่อหา news/news.txt
-            const filePath = '../../../../../../../../../../../news/news.txt';
+            const filePath = '/news/news.txt';
 
             fetch(filePath)
                 .then(response => {
