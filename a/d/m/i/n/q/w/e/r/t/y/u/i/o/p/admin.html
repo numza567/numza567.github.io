@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Numza567 (HTML Mockup)</title>
+    
+    <style>
+        /* 1. การประกาศ @font-face เพื่อโหลดฟอนต์ Itim Regular */
+        @font-face {
+            font-family: 'Itim';
+            /* ใช้เส้นทางสัมพัทธ์ที่ต้องย้อนกลับ 15 โฟลเดอร์เพื่อหาฟอนต์ */
+            src: url('../../../../../../../../../../../Itim-Regular.ttf') format('truetype'); 
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* CSS: สไตล์ Dark Mode สำหรับ Admin Panel */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Itim', cursive, sans-serif;
+            background-color: #1a1a1a; 
+            color: #E0E0E0;
+            line-height: 1.6;
+        }
+        header { background-color: #2c2c2c; padding: 20px 40px; border-bottom: 3px solid #FF9800; }
+        header h1 { color: #FFB74D; font-size: 2em; }
+        main { padding: 40px; max-width: 1400px; margin: 0 auto; }
+        h2 { color: #FFFFFF; margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+
+        /* แถบควบคุมและปุ่ม */
+        .controls { margin-bottom: 30px; padding: 20px; background-color: #2c2c2c; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); display: flex; gap: 15px; }
+        .control-btn { padding: 10px 20px; background-color: #FF9800; color: #1a1a1a; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background-color 0.3s; }
+        .control-btn:hover { background-color: #FB8C00; }
+        .control-btn.delete-all { background-color: #D32F2F; color: white; }
+        .control-btn.delete-all:hover { background-color: #C62828; }
+        .action-btn { padding: 5px 10px; margin-right: 5px; border: none; border-radius: 3px; cursor: pointer; font-size: 0.9em; }
+        .edit-btn { background-color: #1976D2; color: white; }
+        .delete-btn { background-color: #D32F2F; color: white; }
+        #post-list { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        #post-list th, #post-list td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #333; }
+        #post-list th { background-color: #383838; color: #FFB74D; font-weight: bold; }
+        #post-list tr:hover { background-color: #2c2c2c; }
+
+        /* สไตล์สำหรับฟอร์มแก้ไขบทความ (Edit Form) */
+        #edit-form-section {
+            background-color: #2c2c2c;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #FF9800;
+            display: none; /* ซ่อนฟอร์มไว้ก่อนในตอนแรก */
+        }
+        #edit-form-section label {
+            display: block;
+            margin-top: 15px;
+            color: #FFB74D;
+            font-weight: bold;
+        }
+        #edit-form-section input[type="text"], #edit-form-section textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            background-color: #383838;
+            border: 1px solid #555;
+            color: #E0E0E0;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        #edit-form-section textarea {
+            min-height: 200px;
+            font-family: 'Itim', cursive, sans-serif;
+        }
+        #edit-form-section .form-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .save-btn { background-color: #4CAF50; color: white; }
+        .cancel-btn { background-color: #666; color: white; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>แดชบอร์ดผู้ดูแล | Numza567</h1>
+    </header>
+
+    <main>
+        <section class="controls">
+            <button class="control-btn" onclick="showEditForm('new')">📝 เขียนบทความใหม่</button>
+            <button class="control-btn" onclick="simulateAction('ตั้งค่าเว็บไซต์')">⚙️ ตั้งค่าเว็บไซต์</button>
+            <button class="control-btn delete-all" onclick="simulateAction('ล้างข้อมูลทั้งหมด', true)">🗑️ ลบข้อมูลทั้งหมด</button>
+        </section>
+
+        <section id="edit-form-section">
+            <h2 id="form-title">แก้ไขบทความ: [ชื่อบทความ]</h2>
+            <form id="article-form">
+                <input type="hidden" id="edit-post-index">
+
+                <label for="edit-title">หัวข้อบทความ (#)</label>
+                <input type="text" id="edit-title" required>
+
+                <label for="edit-meta">ข้อมูล Meta (## ผู้เขียน: ... | วันที่: ...)</label>
+                <input type="text" id="edit-meta" required>
+
+                <label for="edit-content">เนื้อหาบทความ (Body)</label>
+                <textarea id="edit-content" required></textarea>
+
+                <div class="form-actions">
+                    <button type="button" class="control-btn save-btn" onclick="saveChanges()">✅ บันทึกการแก้ไข (Mockup)</button>
+                    <button type="button" class="control-btn cancel-btn" onclick="hideEditForm()">✖️ ยกเลิก</button>
+                </div>
+            </form>
+        </section>
+
+        <h2>รายการบทความปัจจุบัน (ดึงจาก news.txt)</h2>
+        <table id="post-list">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>หัวข้อบทความ</th>
+                    <th>ผู้เขียน</th>
+                    <th>วันที่</th>
+                    <th>การดำเนินการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="5" style="text-align: center;">กำลังโหลดรายการบทความ...</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        // เก็บข้อมูลบทความทั้งหมดไว้ในตัวแปรนี้
+        let allArticles = []; 
+
+        // ฟังก์ชันจำลองการทำงานของปุ่มควบคุมอื่นๆ
+        function simulateAction(actionName, isDangerous = false) {
+            if (isDangerous) {
+                if (confirm(`คุณแน่ใจหรือไม่ว่าต้องการ ${actionName} จริงๆ? การกระทำนี้ไม่สามารถย้อนกลับได้ (Mockup)`)) {
+                    alert(`✅ จำลอง: ${actionName} สำเร็จ!`);
+                }
+            } else {
+                alert(`✅ จำลอง: เปิดหน้าจอสำหรับ ${actionName} แล้ว!`);
+            }
+        }
+
+        // ฟังก์ชันแสดงฟอร์มและดึงข้อมูลมาใส่
+        function showEditForm(index) {
+            const formSection = document.getElementById('edit-form-section');
+            const formTitle = document.getElementById('form-title');
+            const editTitle = document.getElementById('edit-title');
+            const editMeta = document.getElementById('edit-meta');
+            const editContent = document.getElementById('edit-content');
+            const postIndex = document.getElementById('edit-post-index');
+            
+            if (index === 'new') {
+                formTitle.textContent = 'เขียนบทความใหม่';
+                editTitle.value = '';
+                editMeta.value = 'ผู้เขียน: แอดมินบล็อก | วันที่: ' + new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+                editContent.value = 'พิมพ์เนื้อหาบทความใหม่ที่นี่...\n';
+                postIndex.value = 'new';
+            } else {
+                const article = allArticles[index];
+                if (!article) return;
+
+                const lines = article.split('\n').filter(line => line.trim().length > 0);
+                
+                // แยก Title, Meta และ Content
+                const title = lines[0].replace('#', '').trim();
+                const meta = lines[1].replace('##', '').trim();
+                const content = lines.slice(2).join('\n').trim();
+
+                formTitle.textContent = `แก้ไขบทความ: ${title}`;
+                editTitle.value = title;
+                editMeta.value = meta;
+                editContent.value = content;
+                postIndex.value = index;
+            }
+            formSection.style.display = 'block'; 
+            window.scrollTo(0, 0);
+        }
+
+        // ฟังก์ชันซ่อนฟอร์ม
+        function hideEditForm() {
+            document.getElementById('edit-form-section').style.display = 'none';
+        }
+
+        // ฟังก์ชันบันทึกการเปลี่ยนแปลง (Mockup: ไม่ได้บันทึกจริง)
+        function saveChanges() {
+            const postIndex = document.getElementById('edit-post-index').value;
+            const newTitle = document.getElementById('edit-title').value;
+            
+            // ใช้ setTimeout เพื่อจำลองการส่งข้อมูลไปยังเซิร์ฟเวอร์
+            setTimeout(() => {
+                if (postIndex === 'new') {
+                    alert(`✅ จำลอง: บทความ "${newTitle}" ถูกสร้างใหม่แล้ว! (ข้อมูลไม่ได้ถูกบันทึกจริง)`);
+                } else {
+                    alert(`✅ จำลอง: บทความ "${newTitle}" ถูกแก้ไขแล้ว! (ข้อมูลไม่ได้ถูกบันทึกจริง)`);
+                }
+                hideEditForm();
+                // ในระบบจริง จะต้องเรียก loadPostList() ที่นี่
+                // แต่ในการจำลอง เราแค่ซ่อนฟอร์ม
+            }, 1000); 
+        }
+
+        // ฟังก์ชันดึงข้อมูลและแสดงตาราง
+        function loadPostList() {
+            const tbody = document.querySelector('#post-list tbody');
+            
+            // ใช้ Absolute Path ในการเข้าถึงไฟล์ news/news.txt
+            const filePath = '/news/news.txt'; 
+            
+            fetch(filePath)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('ไม่พบไฟล์ news.txt หรือมีปัญหาในการโหลด');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    allArticles = data.split('---').map(s => s.trim()).filter(s => s.length > 0);
+                    tbody.innerHTML = ''; 
+
+                    if (allArticles.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #FF9800;">ไม่มีบทความในระบบ</td></tr>';
+                        return;
+                    }
+
+                    allArticles.forEach((articleText, index) => {
+                        const lines = articleText.split('\n').filter(line => line.trim().length > 0);
+                        if (lines.length < 2) return;
+
+                        const title = lines[0].replace('#', '').trim();
+                        const metaLine = lines[1].replace('##', '').trim();
+                        
+                        let author = 'ไม่ระบุ';
+                        let date = 'ไม่ระบุ';
+
+                        const authorMatch = metaLine.match(/ผู้เขียน:\s*([^|]+)/);
+                        if (authorMatch) { author = authorMatch[1].trim(); }
+                        const dateMatch = metaLine.match(/วันที่:\s*([^|]+)/);
+                        if (dateMatch) { date = dateMatch[1].trim(); }
+                        
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${title}</td>
+                            <td>${author}</td>
+                            <td>${date}</td>
+                            <td>
+                                <button class="action-btn edit-btn" onclick="showEditForm(${index})">แก้ไข</button>
+                                <button class="action-btn delete-btn" onclick="simulateAction('ลบบทความ: ${title}', true)">ลบ</button>
+                            </td>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    console.error('Fetch Error:', error);
+                    tbody.innerHTML = `<tr><td colspan="5" style="color: red; text-align: center;">ไม่สามารถโหลดบทความได้: ${error.message} (กรุณาตรวจสอบเส้นทาง /news/news.txt)</td></tr>`;
+                });
+        }
+
+        // เริ่มโหลดรายการบทความเมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', loadPostList);
+    </script>
+</body>
+</html>
