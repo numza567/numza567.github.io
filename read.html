@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">กำลังโหลดบทความ...</title>
+    
+    <style>
+        /* 1. การประกาศ @font-face เพื่อโหลดฟอนต์ Itim Regular */
+        @font-face {
+            font-family: 'Itim';
+            src: url('Itim-Regular.ttf') format('truetype'); 
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* รีเซ็ตค่าพื้นฐาน */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* พื้นหลังและฟอนต์หลัก */
+        body {
+            font-family: 'Itim', cursive, sans-serif;
+            background-color: #121212; 
+            color: #E0E0E0;
+            line-height: 1.8; 
+        }
+
+        /* แถบเมนู (Header) */
+        header {
+            background-color: #1F1F1F;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #F57C00; 
+        }
+        .logo { font-size: 1.8em; font-weight: bold; color: #FFB74D; text-decoration: none; }
+        nav a { color: #A0A0A0; text-decoration: none; margin-left: 25px; font-size: 1.1em; transition: color 0.3s; }
+        nav a:hover { color: #FFCC80; }
+
+        /* ส่วนหลัก (Main Content) */
+        main { padding: 40px; max-width: 900px; margin: 0 auto; }
+        #article-title { margin-bottom: 5px; color: #FFFFFF; font-size: 2.5em; }
+        #article-meta { font-size: 1em; color: #FF9800; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        #article-content p { margin-bottom: 1.5em; } 
+        
+        /* ส่วนท้าย (Footer) */
+        footer {
+            background-color: #1F1F1F; text-align: center; padding: 20px; margin-top: 40px; color: #A0A0A0; border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">NUMNAO.COM</a>
+        <nav>
+            <a href="index.html">หน้าแรก</a>
+            <a href="#">ติดต่อ</a>
+            <a href="a/d/m/i/n/q/w/e/r/t/y/u/i/o/p/admin.html">ผู้ดูแล</a> 
+        </nav>
+    </header>
+
+    <main>
+        <h1 id="article-title"></h1>
+        <p id="article-meta"></p>
+        <div id="article-content">
+            <p>กำลังโหลดบทความเต็ม...</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Numnao Blog. ขับเคลื่อนโดย news.txt</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. ดึง ID จาก URL Parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = parseInt(urlParams.get('id'));
+            
+            const titleEl = document.getElementById('article-title');
+            const metaEl = document.getElementById('article-meta');
+            const contentEl = document.getElementById('article-content');
+            const pageTitleEl = document.getElementById('page-title');
+            
+            // ตรวจสอบ ID
+            if (isNaN(articleId) || articleId < 0) {
+                titleEl.textContent = 'ไม่พบบทความ';
+                contentEl.innerHTML = '<p>กรุณากลับไปที่ <a href="index.html">หน้าแรก</a></p>';
+                return;
+            }
+
+            const filePath = '/news/news.txt'; // ใช้ Absolute Path ในการดึงไฟล์
+
+            fetch(filePath)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('ไม่พบไฟล์ news/news.txt');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    // แยกบทความทั้งหมด
+                    const articles = data.split('---').map(s => s.trim()).filter(s => s.length > 0);
+                    
+                    if (articleId >= articles.length) {
+                        titleEl.textContent = 'ไม่พบบทความ';
+                        contentEl.innerHTML = '<p>บทความนี้ไม่มีอยู่ กรุณากลับไปที่ <a href="index.html">หน้าแรก</a></p>';
+                        return;
+                    }
+
+                    // 2. เลือกบทความตาม ID ที่ได้รับ
+                    const articleText = articles[articleId];
+                    const lines = articleText.split('\n').filter(line => line.trim().length > 0);
+                    
+                    const title = lines[0].replace('#', '').trim();
+                    const meta = lines[1].replace('##', '').trim();
+                    // นำส่วนที่เหลือมาใช้ (join ด้วย \n\n เพื่อรักษาการขึ้นบรรทัดใหม่เป็นย่อหน้า)
+                    const content = lines.slice(2).join('\n\n').trim(); 
+
+                    // 3. แสดงผลบทความเต็ม
+                    pageTitleEl.textContent = title + ' | Numnao Blog';
+                    titleEl.textContent = title;
+                    metaEl.textContent = meta;
+                    
+                    // แปลงเนื้อหาเป็น HTML (ใช้ <p> สำหรับแต่ละย่อหน้า)
+                    const contentParagraphs = content.split('\n\n').map(p => `<p>${p}</p>`).join('');
+                    contentEl.innerHTML = contentParagraphs;
+                })
+                .catch(error => {
+                    console.error('Fetch Error:', error);
+                    titleEl.textContent = 'ข้อผิดพลาด';
+                    contentEl.innerHTML = `<p style="color: red;">ไม่สามารถโหลดบทความได้: ${error.message}</p>`;
+                });
+        });
+    </script>
+
+</body>
+</html>
