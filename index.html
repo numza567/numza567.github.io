@@ -9,6 +9,7 @@
         /* CSS: ใช้ Dark Mode, ฟอนต์ Itim, และสีเน้นส้ม */
         @font-face {
             font-family: 'Itim';
+            /* สมมติว่าไฟล์ Itim-Regular.ttf อยู่ในโฟลเดอร์เดียวกับ index.html */
             src: url('Itim-Regular.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
@@ -65,11 +66,11 @@
 <body>
 
     <header>
-        <a href="#" class="logo">NUMNAO.COM</a>
+        <a href="index.html" class="logo">NUMNAO.COM</a>
         <nav>
-            <a href="#">หน้าแรก</a>
+            <a href="index.html">หน้าแรก</a>
             <a href="#">ติดต่อ</a>
-            <a href="a/d/m/i/n/q/w/e/r/t/y/u/i/o/p/index.html">ผู้ดูแล</a>
+            <a href="a/d/m/i/n/q/w/e/r/t/y/u/i/o/p/admin.html">ผู้ดูแล</a>
         </nav>
     </header>
 
@@ -88,13 +89,14 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const container = document.getElementById('posts-container');
-            const filePath = 'news/news.txt'; // กำหนดเส้นทางไฟล์
+            // ใช้เส้นทางสัมพัทธ์ (Relative Path) สำหรับ news.txt
+            const filePath = 'news/news.txt'; 
 
             fetch(filePath)
                 .then(response => {
                     // ตรวจสอบว่าไฟล์ถูกพบหรือไม่
                     if (!response.ok) {
-                        throw new Error('ไม่พบไฟล์ news.txt หรือมีปัญหาในการโหลด');
+                        throw new Error('ไม่พบไฟล์ news/news.txt หรือมีปัญหาในการโหลด');
                     }
                     return response.text();
                 })
@@ -109,11 +111,11 @@
                         return;
                     }
 
-                    articles.forEach(articleText => {
+                    articles.forEach((articleText, index) => { // เพิ่ม index เพื่อความสมบูรณ์แม้จะไม่ได้ใช้
                         // แยกส่วนหัวข้อ, เมตา (ผู้เขียน/วันที่), และเนื้อหา
                         const lines = articleText.split('\n').filter(line => line.trim().length > 0);
                         
-                        if (lines.length < 3) return; // ข้ามถ้าโครงสร้างไม่สมบูรณ์
+                        if (lines.length < 2) return; // เปลี่ยนจาก 3 เป็น 2 เพื่อรองรับโครงสร้าง # และ ##
 
                         const title = lines[0].replace('#', '').trim();
                         const meta = lines[1].replace('##', '').trim();
@@ -124,11 +126,13 @@
                         const card = document.createElement('div');
                         card.className = 'card';
                         
+                        // **** ส่วน card.innerHTML ที่คุณต้องการ (ใช้ alert) ****
                         card.innerHTML = `
                             <h2>${title}</h2>
                             <p class="meta">${meta}</p>
                             <p class="body">${body.substring(0, 150)}...</p> <a href="#" class="read-more" onclick="alert('ฟังก์ชันอ่านต่อต้องสร้างหน้าแยกสำหรับแต่ละบทความ')">อ่านต่อ</a>
                         `;
+                        // ******************************************************
                         
                         container.appendChild(card);
                     });
