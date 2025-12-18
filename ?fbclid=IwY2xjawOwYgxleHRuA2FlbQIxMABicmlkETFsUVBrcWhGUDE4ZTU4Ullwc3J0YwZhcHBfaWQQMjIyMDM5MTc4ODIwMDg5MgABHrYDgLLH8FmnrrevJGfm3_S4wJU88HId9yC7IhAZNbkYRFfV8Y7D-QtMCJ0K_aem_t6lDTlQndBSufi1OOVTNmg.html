@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numnao Blog - บทความล่าสุด</title>
+    
+    <style>
+        /* CSS: ใช้ Dark Mode, ฟอนต์ Itim, และสีเน้นส้ม */
+        @font-face {
+            font-family: 'Itim';
+            src: url('Itim-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Itim', cursive, sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+            line-height: 1.6;
+        }
+        header {
+            background-color: #1F1F1F;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #F57C00;
+        }
+        .logo { font-size: 1.8em; font-weight: bold; color: #FFB74D; text-decoration: none; }
+        nav a { color: #A0A0A0; text-decoration: none; margin-left: 25px; transition: color 0.3s; }
+        nav a:hover { color: #FFCC80; }
+
+        main { padding: 40px; max-width: 1200px; margin: 0 auto; }
+        h1 { margin-bottom: 30px; color: #FFFFFF; border-left: 5px solid #FF9800; padding-left: 10px; }
+        
+        /* Grid สำหรับแสดงบทความ */
+        #posts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        /* รูปแบบ Card บทความ */
+        .card {
+            background-color: #1F1F1F;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s;
+            border: 1px solid #333;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.7); }
+        .card h2 { color: #FFB74D; margin-bottom: 10px; font-size: 1.5em; }
+        .card p.meta { font-size: 0.9em; color: #A0A0A0; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .card p.body { margin-bottom: 15px; }
+        .read-more { color: #FF9800; text-decoration: none; font-weight: bold; }
+        
+        footer {
+            background-color: #1F1F1F; text-align: center; padding: 20px; margin-top: 40px; color: #A0A0A0; border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">numzatest</a>
+        <nav>
+            <a href="index.html">หน้าแรก</a>
+            <a href="#">ติดต่อ</a>
+            <a href="a/d/m/i/n/q/w/e/r/t/y/u/i/o/p/admin.html">ผู้ดูแล</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>บทความบล็อกล่าสุด</h1>
+        
+        <section id="posts-container">
+            <p>กำลังโหลดบทความ...</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Numnao Blog. ขับเคลื่อนโดย news.txt</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('posts-container');
+            const filePath = 'news/news.txt'; // ใช้เส้นทางสัมพัทธ์สำหรับ news.txt
+
+            fetch(filePath)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('ไม่พบไฟล์ news/news.txt หรือมีปัญหาในการโหลด');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    const articles = data.split('---').map(s => s.trim()).filter(s => s.length > 0);
+                    
+                    container.innerHTML = '';
+
+                    if (articles.length === 0) {
+                        container.innerHTML = '<p style="color: #FF9800; font-size: 1.2em;">ยังไม่มีบทความในขณะนี้!</p>';
+                        return;
+                    }
+
+                    articles.forEach((articleText, index) => { // *** ต้องมี index เพื่อใช้สร้างลิงก์ ***
+                        const lines = articleText.split('\n').filter(line => line.trim().length > 0);
+                        
+                        if (lines.length < 2) return; 
+
+                        const title = lines[0].replace('#', '').trim();
+                        const meta = lines[1].replace('##', '').trim();
+                        const body = lines.slice(2).join(' ').trim(); 
+                        
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        
+                        // **** ส่วนที่แก้ไขให้ปุ่มทำงานได้จริง ****
+                        card.innerHTML = `
+                            <h2>${title}</h2>
+                            <p class="meta">${meta}</p>
+                            <p class="body">${body.substring(0, 150)}...</p> 
+                            <a href="read.html?id=${index}" class="read-more">อ่านต่อ</a> 
+                        `;
+                        // ***************************************
+                        
+                        container.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error('Fetch Error:', error);
+                    container.innerHTML = `<p style="color: red;">ไม่สามารถโหลดบทความได้: ${error.message}</p>`;
+                });
+        });
+    </script>
+
+</body>
+</html>
