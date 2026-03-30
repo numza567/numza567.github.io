@@ -13,7 +13,7 @@
 
 ทดสอบ เว็บ ครั้งทีี่ 001 #001 #TEST #testweb Facebook : Numza567 หรือ https://www.facebook.com/profile.php?id=61583895462058
 ---
-# บทความที่ link-server-minecraft-java: How To Create Server Java on Windows 7 and Windows Server 2012/2012r2 Windows Server 2008/2008r2
+# บทความที่ 4: How To Create Server Java on Windows 7 and Windows Server 2012/2012r2 Windows Server 2008/2008r2
 ## ผู้เขียน: Numza567 | วันที่: 30 มี.ค. 2569
 
 ตัว java : https://sdlc-esd.oracle.com/ESD6/JSCDL/jdk/8u481-b10/0d06828d282343ea81775b28020a7cd3/jre-8u481-windows-x64.exe?GroupName=JSC&FilePath=/ESD6/JSCDL/jdk/8u481-b10/0d06828d282343ea81775b28020a7cd3/jre-8u481-windows-x64.exe&BHost=javadl.sun.com&File=jre-8u481-windows-x64.exe&AuthParam=1774794124_e38bc56557466cd850ce993b36fcd43f&ext=.exe
